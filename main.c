@@ -2,13 +2,23 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <string.h>
 static void sighandler(int signo) {
     if (signo == SIGINT) {
-        printf("\nProgram is exiting due to SIGINT\n");
+        int file = open("msg.txt", O_APPEND | O_CREAT | O_WRONLY, 0664);
+        if (file == -1) 
+        {
+          printf("Error %d: %s", errno, strerror(errno));
+        }
+        char msg[] = "Program is exiting due to SIGINT\n";
+        write(file, msg, sizeof(msg) - 1);
+        close(file);
         exit(0);
     }
     if (signo == SIGUSR1) {
-      printf("\nSIGUSR1 signal detected. Parent ID: %d\n", getppid());
+      printf("\nSIGUSR1 signal detected. Child ID: %d | Parent ID: %d\n", getpid(), getppid());
     }
 }
 
