@@ -13,7 +13,10 @@ static void sighandler(int signo) {
           printf("Error %d: %s", errno, strerror(errno));
         }
         char msg[] = "Program is exiting due to SIGINT\n";
-        write(file, msg, sizeof(msg) - 1);
+        int written = write(file, msg, sizeof(msg) - 1);
+        if (written == -1) {
+          printf("Error %d: %s", errno, strerror(errno));
+        }
         close(file);
         exit(0);
     }
